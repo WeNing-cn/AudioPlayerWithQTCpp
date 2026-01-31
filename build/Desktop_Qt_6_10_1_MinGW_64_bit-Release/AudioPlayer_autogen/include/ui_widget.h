@@ -62,7 +62,7 @@ public:
     {
         if (Widget->objectName().isEmpty())
             Widget->setObjectName("Widget");
-        Widget->resize(389, 106);
+        Widget->resize(398, 136);
         ALL = new QVBoxLayout(Widget);
         ALL->setObjectName("ALL");
         INF = new QWidget(Widget);
@@ -80,7 +80,7 @@ public:
         label_5 = new QLabel(INF);
         label_5->setObjectName("label_5");
         label_5->setMinimumSize(QSize(60, 0));
-        label_5->setMaximumSize(QSize(16777215, 16777215));
+        label_5->setMaximumSize(QSize(60, 16777215));
 
         Infor->addWidget(label_5);
 
@@ -94,7 +94,7 @@ public:
         label_6 = new QLabel(INF);
         label_6->setObjectName("label_6");
         label_6->setMinimumSize(QSize(30, 0));
-        label_6->setMaximumSize(QSize(16777215, 16777215));
+        label_6->setMaximumSize(QSize(60, 16777215));
 
         Infor->addWidget(label_6);
 
