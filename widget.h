@@ -33,6 +33,12 @@ public:
      * 析构函数
      */
     ~Widget();
+    
+    /**
+     * 打开指定的音频文件
+     * @param filePath 音频文件路径
+     */
+    void openFile(const QString &filePath);
 
 private slots:
     /**

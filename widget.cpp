@@ -76,6 +76,63 @@ Widget::~Widget()
     delete ui;
 }
 
+void Widget::openFile(const QString &filePath)
+{
+    // 检查文件是否存在
+    QFileInfo fileInfo(filePath);
+    if (!fileInfo.exists()) {
+        return;
+    }
+    
+    // 获取文件的绝对路径
+    QString absoluteFilePath = fileInfo.absoluteFilePath();
+    
+    // 清空当前播放列表
+    playlist.clear();
+    
+    // 获取文件所在目录
+    QString dirPath = fileInfo.absolutePath();
+    lastOpenDir = dirPath;
+    
+    // 支持的音频文件扩展名
+    QStringList audioExtensions = {"*.mp3", "*.wav", "*.ogg", "*.flac"};
+    
+    // 扫描目录下的所有音频文件
+    QDir dir(dirPath);
+    for (const QString &extension : audioExtensions) {
+        QStringList audioFiles = dir.entryList({extension}, QDir::Files);
+        for (const QString &audioFile : audioFiles) {
+            QString fullPath = dir.absoluteFilePath(audioFile);
+            playlist.append(fullPath);
+        }
+    }
+    
+    // 重置索引
+    currentIndex = -1;
+    previousIndex = -1;
+    
+    // 如果播放列表不为空
+    if (!playlist.isEmpty()) {
+        // 查找该文件在播放列表中的索引
+        int playIndex = -1;
+        for (int i = 0; i < playlist.size(); ++i) {
+            if (QFileInfo(playlist[i]).absoluteFilePath() == absoluteFilePath) {
+                playIndex = i;
+                break;
+            }
+        }
+        
+        // 如果找到该文件，则从该索引开始播放；否则播放第一首
+        if (playIndex != -1) {
+            playAt(playIndex);
+        } else {
+            // 如果找不到，尝试直接添加该文件到播放列表并播放
+            playlist.append(absoluteFilePath);
+            playAt(playlist.size() - 1);
+        }
+    }
+}
+
 void Widget::on_pushButton_clicked()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(
