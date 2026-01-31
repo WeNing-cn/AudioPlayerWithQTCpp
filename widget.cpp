@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QVideoWidget>
 #include <QDir>
 #include <QTime>
 #include <QDebug>
@@ -16,6 +17,7 @@
 #include <QSettings>
 #include <QFile>
 #include <QFileInfo>
+#include <QKeyEvent>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -31,6 +33,12 @@ Widget::Widget(QWidget *parent)
     
     // 设置音频输出
     player->setAudioOutput(audioOutput);
+    
+    // 设置视频输出
+    player->setVideoOutput(ui->videoWidget);
+    
+    // 为videoWidget安装事件过滤器，用于捕获全屏模式下的键盘事件
+    ui->videoWidget->installEventFilter(this);
     
     // 设置进度条和音量条的范围
     ui->ProgressSilder->setRange(0, 100);
@@ -66,6 +74,12 @@ Widget::Widget(QWidget *parent)
     
     // 加载配置文件
     loadSettings();
+    
+    // 连接Speed部件的信号
+    connect(ui->Speed, &QComboBox::currentTextChanged, this, &Widget::onSpeedChanged);
+    
+    // 连接FullScreen按钮的信号
+    connect(ui->FullScreen, &QPushButton::clicked, this, &Widget::toggleFullScreen);
 }
 
 Widget::~Widget()
@@ -74,6 +88,165 @@ Widget::~Widget()
     saveSettings();
     
     delete ui;
+}
+
+void Widget::onSpeedChanged(const QString &speedText)
+{
+    // 从文本中提取速度值
+    QString speedStr = speedText;
+    speedStr.remove("x"); // 移除"x"后缀
+    
+    // 转换为浮点数
+    bool ok;
+    double speed = speedStr.toDouble(&ok);
+    
+    if (ok) {
+        // 设置播放速度
+        player->setPlaybackRate(speed);
+    }
+}
+
+void Widget::toggleFullScreen()
+{
+    if (ui->videoWidget->isFullScreen()) {
+        ui->videoWidget->setFullScreen(false);
+        ui->FullScreen->setText("全屏");
+    } else {
+        ui->videoWidget->setFullScreen(true);
+        ui->FullScreen->setText("退出全屏");
+    }
+}
+
+bool Widget::eventFilter(QObject *watched, QEvent *event)
+{
+    // 检查是否是videoWidget的事件，并且是键盘事件
+    if (watched == ui->videoWidget && event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        
+        // 检查是否处于全屏模式
+        if (ui->videoWidget->isFullScreen()) {
+            switch (keyEvent->key()) {
+            case Qt::Key_Escape:
+                // ESC键退出全屏
+                ui->videoWidget->setFullScreen(false);
+                ui->FullScreen->setText("全屏");
+                return true;
+            case Qt::Key_Left:
+                // 左键快退5秒
+                player->setPosition(player->position() - 5000);
+                return true;
+            case Qt::Key_Right:
+                // 右键快进5秒
+                player->setPosition(player->position() + 5000);
+                return true;
+            case Qt::Key_Up:
+                // 上键增加音量
+                {
+                    int currentVolume = ui->SoundSilder->value();
+                    int newVolume = qMin(currentVolume + 5, 100);
+                    ui->SoundSilder->setValue(newVolume);
+                    audioOutput->setVolume(newVolume / 100.0);
+                    ui->label_2->setText(QString("%1 %").arg(newVolume));
+                }
+                return true;
+            case Qt::Key_Down:
+                // 下键减少音量
+                {
+                    int currentVolume = ui->SoundSilder->value();
+                    int newVolume = qMax(currentVolume - 5, 0);
+                    ui->SoundSilder->setValue(newVolume);
+                    audioOutput->setVolume(newVolume / 100.0);
+                    ui->label_2->setText(QString("%1 %").arg(newVolume));
+                }
+                return true;
+            default:
+                break;
+            }
+        }
+    }
+    
+    // 其他事件交给默认处理
+    return QWidget::eventFilter(watched, event);
+}
+
+void Widget::keyPressEvent(QKeyEvent *event)
+{
+    // 检查是否处于全屏模式
+    if (ui->videoWidget->isFullScreen()) {
+        switch (event->key()) {
+        case Qt::Key_Escape:
+            // ESC键退出全屏
+            ui->videoWidget->setFullScreen(false);
+            ui->FullScreen->setText("全屏");
+            break;
+        case Qt::Key_Left:
+            // 左键快退5秒
+            player->setPosition(player->position() - 5000);
+            break;
+        case Qt::Key_Right:
+            // 右键快进5秒
+            player->setPosition(player->position() + 5000);
+            break;
+        case Qt::Key_Up:
+            // 上键增加音量
+            {
+                int currentVolume = ui->SoundSilder->value();
+                int newVolume = qMin(currentVolume + 5, 100);
+                ui->SoundSilder->setValue(newVolume);
+                audioOutput->setVolume(newVolume / 100.0);
+                ui->label_2->setText(QString("%1 %").arg(newVolume));
+            }
+            break;
+        case Qt::Key_Down:
+            // 下键减少音量
+            {
+                int currentVolume = ui->SoundSilder->value();
+                int newVolume = qMax(currentVolume - 5, 0);
+                ui->SoundSilder->setValue(newVolume);
+                audioOutput->setVolume(newVolume / 100.0);
+                ui->label_2->setText(QString("%1 %").arg(newVolume));
+            }
+            break;
+        default:
+            QWidget::keyPressEvent(event);
+            break;
+        }
+    } else {
+        QWidget::keyPressEvent(event);
+    }
+}
+
+void Widget::updateVideoBoxSize(const QString &filePath)
+{
+    // 获取文件扩展名
+    QFileInfo fileInfo(filePath);
+    QString extension = fileInfo.suffix().toLower();
+    
+    // 定义视频文件扩展名列表
+    QStringList videoExtensions = {"mp4", "avi", "mov", "wmv", "mkv", "flv", "m4v", "webm"};
+    
+    // 检查是否为视频文件
+    bool isVideo = videoExtensions.contains(extension);
+    
+    if (isVideo) {
+        // 如果是视频，设置VideoBox为400*400
+        ui->VideoBox->setMinimumSize(400, 400);
+        ui->VideoBox->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        ui->videoWidget->setVisible(true);
+        // 启用全屏按钮
+        ui->FullScreen->setEnabled(true);
+    } else {
+        // 如果是音频，设置VideoBox为0*0
+        ui->VideoBox->setMinimumSize(0, 0);
+        ui->VideoBox->setMaximumSize(0, 0);
+        ui->videoWidget->setVisible(false);
+        // 禁用全屏按钮
+        ui->FullScreen->setEnabled(false);
+    }
+    
+    // 调整布局
+    ui->ALL->update();
+    this->adjustSize();
 }
 
 void Widget::openFile(const QString &filePath)
@@ -94,15 +267,15 @@ void Widget::openFile(const QString &filePath)
     QString dirPath = fileInfo.absolutePath();
     lastOpenDir = dirPath;
     
-    // 支持的音频文件扩展名
-    QStringList audioExtensions = {"*.mp3", "*.wav", "*.ogg", "*.flac"};
+    // 支持的音视频文件扩展名
+    QStringList mediaExtensions = {"*.mp3", "*.wav", "*.ogg", "*.flac", "*.mp4", "*.avi", "*.mov", "*.wmv", "*.mkv"};
     
-    // 扫描目录下的所有音频文件
+    // 扫描目录下的所有音视频文件
     QDir dir(dirPath);
-    for (const QString &extension : audioExtensions) {
-        QStringList audioFiles = dir.entryList({extension}, QDir::Files);
-        for (const QString &audioFile : audioFiles) {
-            QString fullPath = dir.absoluteFilePath(audioFile);
+    for (const QString &extension : mediaExtensions) {
+        QStringList mediaFiles = dir.entryList({extension}, QDir::Files);
+        for (const QString &mediaFile : mediaFiles) {
+            QString fullPath = dir.absoluteFilePath(mediaFile);
             playlist.append(fullPath);
         }
     }
@@ -137,9 +310,10 @@ void Widget::on_pushButton_clicked()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(
         this,                    // 父窗口
-        tr("选择音频文件"),        // 对话框标题
+        tr("选择音视频文件"),        // 对话框标题
         lastOpenDir,             // 初始目录
-        tr("音频文件 (*.mp3 *.wav *.ogg *.flac);;所有文件 (*.*)"));  // 文件过滤器
+        tr("音视频文件 (*.mp3 *.wav *.ogg *.flac *.mp4 *.avi *.mov *.wmv *.mkv);;所有文件 (*.*)")
+    );  // 文件过滤器
 
     if (!fileNames.isEmpty()) {
         // 清空当前播放列表
@@ -148,8 +322,8 @@ void Widget::on_pushButton_clicked()
         // 存储已处理的目录，避免重复扫描
         QSet<QString> processedDirs;
         
-        // 支持的音频文件扩展名
-        QStringList audioExtensions = {"*.mp3", "*.wav", "*.ogg", "*.flac"};
+        // 支持的音视频文件扩展名
+        QStringList mediaExtensions = {"*.mp3", "*.wav", "*.ogg", "*.flac", "*.mp4", "*.avi", "*.mov", "*.wmv", "*.mkv"};
         
         // 处理每个选择的文件
         for (const QString &fileName : fileNames) {
@@ -162,12 +336,12 @@ void Widget::on_pushButton_clicked()
                 // 标记为已处理
                 processedDirs.insert(dirPath);
                 
-                // 扫描目录下的所有音频文件
+                // 扫描目录下的所有音视频文件
                 QDir dir(dirPath);
-                for (const QString &extension : audioExtensions) {
-                    QStringList audioFiles = dir.entryList({extension}, QDir::Files);
-                    for (const QString &audioFile : audioFiles) {
-                        QString fullPath = dir.absoluteFilePath(audioFile);
+                for (const QString &extension : mediaExtensions) {
+                    QStringList mediaFiles = dir.entryList({extension}, QDir::Files);
+                    for (const QString &mediaFile : mediaFiles) {
+                        QString fullPath = dir.absoluteFilePath(mediaFile);
                         playlist.append(fullPath);
                     }
                 }
@@ -289,6 +463,10 @@ void Widget::playAt(int index)
     
     // 设置播放源并播放
     player->setSource(QUrl::fromLocalFile(fileName));
+    
+    // 检测媒体类型并调整VideoBox大小
+    updateVideoBoxSize(fileName);
+    
     player->play();
 }
 
@@ -440,6 +618,9 @@ void Widget::loadSettings()
                 QString parentPath = fileInfo.absolutePath();
                 QDir dir(parentPath);
                 ui->label_6->setText(dir.dirName());
+                
+                // 检测媒体类型并调整VideoBox大小
+                updateVideoBoxSize(currentSong);
                 
                 // 设置播放位置
                 player->setPosition(position);

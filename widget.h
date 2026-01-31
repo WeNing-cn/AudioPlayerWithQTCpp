@@ -109,6 +109,31 @@ private slots:
      * 从配置文件加载播放器状态
      */
     void loadSettings();
+    /**
+     * 更新视频框大小以适应当前音频文件
+     * @param filePath 音频文件路径
+     */
+    void updateVideoBoxSize(const QString &filePath);
+    /**
+     * 速度选择框文本改变事件
+     * @param speedText 速度文本
+     */ 
+    void onSpeedChanged(const QString &speedText);
+    /**
+     * 全屏/退出全屏按钮点击事件
+     */
+    void toggleFullScreen();
+    /**
+     * 键盘事件处理
+     * @param event 键盘事件指针
+     */
+    void keyPressEvent(QKeyEvent *event) override;
+    
+    /**
+     * 事件过滤器，用于捕获全屏模式下的键盘事件
+     */
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    
 
 private:
     Ui::Widget *ui;              // UI界面指针
