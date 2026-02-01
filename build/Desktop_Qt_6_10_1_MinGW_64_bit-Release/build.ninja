@@ -73,6 +73,13 @@ build CMakeFiles/AudioPlayer.dir/widget.cpp.obj: CXX_COMPILER__AudioPlayer_unsca
   OBJECT_DIR = CMakeFiles\AudioPlayer.dir
   OBJECT_FILE_DIR = CMakeFiles\AudioPlayer.dir
 
+build CMakeFiles/AudioPlayer.dir/app.rc.obj: RC_COMPILER__AudioPlayer_unscanned_Release C$:/CODE/QTS/Projects/AudioPlayer/Forgit/AudioPlayerWithQTCpp/app.rc || cmake_object_order_depends_target_AudioPlayer
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_MULTIMEDIAWIDGETS_LIB -DQT_MULTIMEDIA_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEP_FILE = CMakeFiles\AudioPlayer.dir\app.rc.obj.d
+  INCLUDES = -I C:/CODE/QTS/Projects/AudioPlayer/Forgit/AudioPlayerWithQTCpp/build/Desktop_Qt_6_10_1_MinGW_64_bit-Release/AudioPlayer_autogen/include -I C:/D/software/QT/6.10.1/mingw_64/include/QtCore -I C:/D/software/QT/6.10.1/mingw_64/include -I C:/D/software/QT/6.10.1/mingw_64/mkspecs/win32-g++ -I C:/D/software/QT/6.10.1/mingw_64/include/QtWidgets -I C:/D/software/QT/6.10.1/mingw_64/include/QtGui -I C:/D/software/QT/6.10.1/mingw_64/include/QtMultimedia -I C:/D/software/QT/6.10.1/mingw_64/include/QtNetwork -I C:/D/software/QT/6.10.1/mingw_64/include/QtMultimediaWidgets
+  OBJECT_DIR = CMakeFiles\AudioPlayer.dir
+  OBJECT_FILE_DIR = CMakeFiles\AudioPlayer.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target AudioPlayer
@@ -81,7 +88,7 @@ build CMakeFiles/AudioPlayer.dir/widget.cpp.obj: CXX_COMPILER__AudioPlayer_unsca
 #############################################
 # Link the executable AudioPlayer.exe
 
-build AudioPlayer.exe: CXX_EXECUTABLE_LINKER__AudioPlayer_Release CMakeFiles/AudioPlayer.dir/AudioPlayer_autogen/mocs_compilation.cpp.obj CMakeFiles/AudioPlayer.dir/main.cpp.obj CMakeFiles/AudioPlayer.dir/widget.cpp.obj | C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6MultimediaWidgets.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Widgets.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Multimedia.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Network.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Gui.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Core.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6EntryPoint.a || AudioPlayer_autogen AudioPlayer_autogen_timestamp_deps
+build AudioPlayer.exe: CXX_EXECUTABLE_LINKER__AudioPlayer_Release CMakeFiles/AudioPlayer.dir/AudioPlayer_autogen/mocs_compilation.cpp.obj CMakeFiles/AudioPlayer.dir/main.cpp.obj CMakeFiles/AudioPlayer.dir/widget.cpp.obj CMakeFiles/AudioPlayer.dir/app.rc.obj | C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6MultimediaWidgets.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Widgets.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Multimedia.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Network.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Gui.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6Core.a C$:/D/software/QT/6.10.1/mingw_64/lib/libQt6EntryPoint.a || AudioPlayer_autogen AudioPlayer_autogen_timestamp_deps
   FLAGS = -O3 -DNDEBUG
   LINK_FLAGS = -mwindows
   LINK_LIBRARIES = C:/D/software/QT/6.10.1/mingw_64/lib/libQt6MultimediaWidgets.a  C:/D/software/QT/6.10.1/mingw_64/lib/libQt6Widgets.a  C:/D/software/QT/6.10.1/mingw_64/lib/libQt6Multimedia.a  C:/D/software/QT/6.10.1/mingw_64/lib/libQt6Network.a  -lws2_32  C:/D/software/QT/6.10.1/mingw_64/lib/libQt6Gui.a  C:/D/software/QT/6.10.1/mingw_64/lib/libQt6Core.a  -lmpr  -luserenv  -lmingw32  C:/D/software/QT/6.10.1/mingw_64/lib/libQt6EntryPoint.a  -lshell32  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32

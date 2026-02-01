@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Release-651e51f0fab3913a1384.json",
+					"jsonFile" : "directory-.-Release-e852bc55c89cb75f8dc5.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -44,7 +44,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "AudioPlayer::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-AudioPlayer-Release-e513fe282d7b78c685b0.json",
+					"jsonFile" : "target-AudioPlayer-Release-acb52ef505dc0aa81cd0.json",
 					"name" : "AudioPlayer",
 					"projectIndex" : 0
 				},

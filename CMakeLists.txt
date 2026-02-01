@@ -12,11 +12,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia MultimediaWidgets)
 
+# 检查是否为Windows平台
+if(WIN32)
+    # 添加资源文件到项目
+    set(RESOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/app.rc)
+endif()
+
 set(PROJECT_SOURCES
         main.cpp
         widget.cpp
         widget.h
         widget.ui
+        ${RESOURCE_FILE}
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
