@@ -429,12 +429,21 @@ void Widget::updateProgress()
     ui->ProgressSilder->setValue(player->position());
     
     // 更新时间显示
-    QTime currentTime(0, 0, 0);
-    QTime durationTime(0, 0, 0);
-    currentTime = currentTime.addMSecs(player->position());
-    durationTime = durationTime.addMSecs(player->duration());
+    // 计算当前时间：总分钟数和秒数
+    qint64 currentMs = player->position();
+    int currentTotalMinutes = currentMs / (1000 * 60);
+    int currentSeconds = (currentMs / 1000) % 60;
     
-    ui->label->setText(QString("%1/%2").arg(currentTime.toString("mm:ss")).arg(durationTime.toString("mm:ss")));
+    // 计算总时长：总分钟数和秒数
+    qint64 durationMs = player->duration();
+    int durationTotalMinutes = durationMs / (1000 * 60);
+    int durationSeconds = (durationMs / 1000) % 60;
+    
+    // 格式化显示，分钟可以超过60
+    QString currentTimeStr = QString("%1:%2").arg(currentTotalMinutes, 2, 10, QLatin1Char('0')).arg(currentSeconds, 2, 10, QLatin1Char('0'));
+    QString durationTimeStr = QString("%1:%2").arg(durationTotalMinutes, 2, 10, QLatin1Char('0')).arg(durationSeconds, 2, 10, QLatin1Char('0'));
+    
+    ui->label->setText(QString("%1/%2").arg(currentTimeStr).arg(durationTimeStr));
 }
 
 
